@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: argocd
+#  - secrets.yml
+#  - deployment.yml
+#  - ../base
+#  - servi
+# helmCharts:
+#   - name: argo-cd
+#     repo: https://charts.bitnami.com/bitnami
+#     #    version: 15.10.5
+#     releaseName: argo-cd
+#     namespace: argocd
+#     includeCRDs: true
+#  - name: argo-cd
+#    repo: https://charts.bitnami.com/bitnami
+#    #    version: 15.10.5
+#    releaseName: argo-workflows
+#    namespace: argocd
+#    includeCRDs: true
+resources:
+    # - namespace.yml
+    #    - https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    #    - https://raw.githubusercontent.com/argoproj/argo-cd/v2.0.4/manifests/ha/install.yaml
+    - apps.yaml
+
+#namePrefix: demo
+#nameSuffix: yuri
