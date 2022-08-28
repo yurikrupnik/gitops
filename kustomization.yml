@@ -4,11 +4,12 @@ resources:
 #  - secrets.yaml
   #  - composition.yml
     - prometheus
-    - jenkins
+#    - jenkins
 #    - cert-manager
 #    - crossplane
     - argocd
-    - ingress
+    - argo-workflows
+#    - ingress
 #    - vault
 
 #helmCharts:

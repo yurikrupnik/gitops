@@ -1,0 +1,107 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: webhook
+spec:
+  service:
+    ports:
+      - port: 12000
+        targetPort: 12000
+  webhook:
+    example:
+      port: "12000"
+      endpoint: /example
+      method: POST
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: minio
+spec:
+  dependencies:
+    - name: test-dep
+      eventSourceName: minio
+      eventName: example
+  triggers:
+    - template:
+        name: http-trigger
+
+        http:
+          url: http://http-server.argo-events.svc:8090/hello
+          method: POST
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+#  generateName: very-
+  name: ls-random
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+spec:
+  entrypoint: silly
+  serviceAccountName: workflow
+  template:
+    - name: silly
+      container:
+        image: alpine:latest
+        command: [ls]
+        args: ["-l"]
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  #  generateName: very-
+  name: ls-random
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+spec:
+  entrypoint: hello
+  serviceAccountName: workflow
+  template:
+    - name: hello
+      steps:
+        - - name: ls
+            template: template-ls
+        - - name: sleep-a
+            template: template-sleep
+          - name: sleep-b
+            template: template-sleep
+        - - name: delay
+            template: template-delay
+        - name: sleep
+          template: template-sleep
+    - name: template-ls
+      container:
+        image: alpine
+        command: [ls]
+        args: ["-l"]
+    - name: template-sleep
+      container:
+        image: alpine
+        command: [ sleep ]
+        args: [ "10" ]
+    - name: template-delay
+      suspend:
+        duration: "600s"
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterWorkflowTemplate
+metadata:
+  name: container-image
+spec:
+  templates:
+    - name:
+      inputs:
+        parameters:
+          - name: app_repo
+          - name: container_image
+          - name: container_tag
+      container:
+        image: gcr.io/kaniko-project/executor:debug
+        args:
+          - --context={{inputs.parameters.app_repo}}
+          - --destination={{inputs.parameters.container_image}}:{{inputs.parameters.container_tag}}
+        volumeMounts:
+          - name: kaniko-secret
+            mountPath: /kaniko/.docker/

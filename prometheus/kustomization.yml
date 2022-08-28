@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
     - namespace.yaml
 #    - ingress.yaml
-namespace: prometheus
+namespace: monitor
 helmCharts:
     - name: prometheus
       repo: https://prometheus-community.github.io/helm-charts

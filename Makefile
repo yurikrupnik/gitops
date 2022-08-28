@@ -21,12 +21,16 @@ get-argocd-secret-yaml:
 helm-prometheus-up:
 	kind create cluster --config config/cluster.yaml
 	helm repo add bitnami https://charts.bitnami.com/bitnami
-	helm install prometheus bitnami/kube-prometheus -n prometheus --create-namespace
-	helm install argocd bitnami/argo-cd -n argocd --create-namespace
-	helm install workflows bitnami/argo-workflows -n workflows --create-namespace
-	helm install grafana bitnami/grafana -n grafana --create-namespace
-	helm install cert-manager bitnami/cert-manager -n cert-manager --create-namespace
-	helm install ingress-nginx bitnami/nginx-ingress-controller -n ingress-nginx --create-namespace
+	helm repo add crossplane-stable https://charts.crossplane.io/stable
+	helm install crossplane --namespace crossplane-system crossplane-stable/crossplane --create-namespace --set installCRDs=true
+	helm install prometheus bitnami/kube-prometheus -n prometheus --create-namespace --set installCRDs=true
+	helm install argo-workflows bitnami/argo-workflows -n argo --create-namespace --set installCRDs=true -f argo-workflows/values.yaml
+	helm install argo-events bitnami/argo-events -n argo-events --create-namespace --set installCRDs=true
+	helm install argo bitnami/argo-cd -n argo --create-namespace --set installCRDs=true -f argocd/values.yaml
+	helm install grafana bitnami/grafana -n grafana --create-namespace --set installCRDs=true
+	helm install cert-manager bitnami/cert-manager -n cert-manager --create-namespace --set installCRDs=true
+	helm install ingress-nginx bitnami/nginx-ingress-controller -n ingress-nginx --create-namespace --set installCRDs=true
+	helm install traefik traefik/traefik -n traefik --create-namespace --set installCRDs=true
 
 	kustomize build --enable-helm | kubectl apply -f -
 	kubectl apply -f argocd/apps.yaml

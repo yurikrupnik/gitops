@@ -9,11 +9,12 @@ NEW_SA_NAME=test-service-account-name
 #echo regular $NEW_SA_NAME
 #echo with {} ${NEW_SA_NAME}
 echo "mongo url $MONGO_URI1"
-helm install my-release bitnami/kube-prometheus -n prometheus --create-namespace
-helm install my-release bitnami/argo-cd -n argocd --create-namespace
-helm install my-release bitnami/argo-workflows -n workflows --create-namespace
-helm install my-release bitnami/grafana -n grafana --create-namespace
-helm install my-release bitnami/cert-manager -n cert-manager --create-namespace
+helm install kube-prometheus bitnami/kube-prometheus -n prometheus --create-namespace --set installCRDs=true
+helm install argo-cd bitnami/argo-cd -n argocd --create-namespace --set installCRDs=true
+helm install argo-workflows bitnami/argo-workflows -n workflows --create-namespace --set installCRDs=true
+helm install grafana bitnami/grafana -n grafana --create-namespace --set installCRDs=true
+# https://cert-manager.io/docs/installation/helm/#option-1-installing-crds-with-kubectl
+helm install cert-manager jetstack/cert-manager -n cert-manager --create-namespace --version v1.8.2 --set installCRDs=true
 #gh gist view -w
 #SA="${NEW_SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
 #gcloud iam service-accounts create $NEW_SA_NAME --project $PROJECT_ID
