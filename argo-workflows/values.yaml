@@ -305,7 +305,7 @@ mysql:
     pullSecrets: []
     registry: docker.io
     repository: bitnami/mysql
-    tag: 8.0.29-debian-11-r3
+    tag: 8.0.33-debian-11-r3
   initdbScripts: {}
   initdbScriptsConfigMap: ""
   kubeVersion: ""
