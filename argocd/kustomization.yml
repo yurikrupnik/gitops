@@ -22,7 +22,7 @@ resources:
 helmCharts:
     - name: argo-cd
       repo: https://charts.bitnami.com/bitnami
-      version: 5.2.5
+      version: 5.2.8
       releaseName: argo-cd
       namespace: argocd
       includeCRDs: true
