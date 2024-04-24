@@ -1,0 +1,8 @@
+kcl_cli_configs:
+  files:
+    - main.k
+  disable_none: true
+  strict_range_check: true
+kcl_options:
+  - key: key
+    value: value

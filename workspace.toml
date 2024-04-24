@@ -1,0 +1,9 @@
+#ad="asd"
+#ads: "nim"
+[package.data]
+node_version="20"
+rust_version="1.77.2" #cargo --version
+
+[package.cloud]
+gcp_project="devops-386509"
+gcp_user="yuri@airwayz.co"

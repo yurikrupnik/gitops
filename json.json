@@ -1,0 +1,1 @@
+//jtd-codegen schemas/user.jtd.json --typescript-out src/user

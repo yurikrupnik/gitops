@@ -1,0 +1,9 @@
+kcl_options:
+  - key: env
+    value: prod
+  - key: cloud
+    value: google
+  - key: user
+    value: yuri@airwayz.co
+  - key: git-provider
+    value: github

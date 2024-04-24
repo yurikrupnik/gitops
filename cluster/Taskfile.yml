@@ -1,0 +1,26 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+  CLUSTER_TYPE: kind
+tasks:
+  delete:
+    desc: Delete kind 4 cores local cluster.
+    summary: Delete Kind Cluster
+    aliases:
+      - delete
+    cmds:
+      - kind delete cluster
+  create:
+    desc: Create kind 4 cores local cluster.
+    summary: Create Kind Cluster
+    aliases:
+      - create
+    dir: cluster
+    preconditions:
+      - echo default CLUSTER_TYPE: {{.CLUSTER_TYPE}}
+    label: as
+    cmds:
+      - kind create cluster --config cluster.yaml

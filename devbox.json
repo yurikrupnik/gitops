@@ -1,0 +1,28 @@
+
+{
+  "packages": [
+    "kind",
+    "gh",
+    "kubectl",
+    "bat",
+    "upbound",
+    "yq-go",
+    "go-task",
+    "kubernetes-helm",
+    "kyverno-chainsaw",
+    "crossplane-cli"
+  ],
+  "shell": {
+    "init_hook": [
+      "alias cat='bat --paging never --theme DarkNeon --style plain'",
+      "PS1=\"➜ \""
+    ],
+    "scripts": {
+      "cluster-create":  ["task cluster-create"],
+      "cluster-destroy": ["task cluster-destroy"],
+      "package-publish": ["task package-publish"],
+      "test":            ["task test"],
+      "test-watch":      ["task test-watch"]
+    }
+  }
+}

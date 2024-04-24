@@ -1,0 +1,88 @@
+# https://taskfile.dev
+
+version: '3'
+includes:
+  cluster: cluster
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  default:
+    cmds:
+      - echo "{{.GREETING}}"
+    silent: true
+  # Test
+#  test:
+#    desc: Combines `cluster-create`, `test-watch` (without the watcher), and `cluster-destroy` tasks.
+#    cmds:
+#      - task: cluster-create
+#      - task: test-watch
+#      - defer: { task: cluster-destroy }
+#  echo:
+#    cmds:
+#      - echo hello
+  stop:
+    cmds:
+      - task: cluster:delete
+  start:
+    aliases:
+      - shit
+    deps:
+      - task: cluster:create
+    cmds:
+      - flux bootstrap github \
+        --token-auth \
+        --owner=yurikrupnik \
+        --repository=my-repository-name \
+        --branch=main \
+        --path=clusters/my-cluster \
+        --personal
+#      - helm install prometheus-release prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+#      - helm install --create-namespace -n vela-system kubevela kubevela/vela-core --wait
+#      - helm install external-secrets external-secrets/external-secrets -n external-secrets --create-namespace
+#      - defer: cluster:delete
+  # Test
+  test:
+    desc: Combines `cluster-create`, `test-watch` (without the watcher), and `cluster-destroy` tasks.
+    cmds:
+      - task: cluster:create
+      - task: test-watch
+      - defer: { task: cluster:delete }
+  test-watch:
+    desc: Runs tests assuming that the cluster is already created and everything is installed.
+    deps:
+      - task: package-generate
+    cmds:
+      - task: package-apply
+      - chainsaw test
+    watch: true
+    sources:
+      - kcl/*.k
+      - tests/**/*.yaml
+    generates:
+      - package/*.yaml
+#  create-local-cluster:
+#    cmds:
+#      - minikube start --cpus 4 --nodes 3
+#      - kind create cluster
+#      - ignore_error: true
+  #  do-that:
+#    cmds:
+#      - kcl run oci://ghcr.io/kcl-lang/crossplane-xnetwork-kcl-function -S items - -D params='{"oxr": {"spec": {"id": "network-test-functions"}}}'
+
+#  test-once:
+#    desc: Runs tests once assuming that the cluster is already created and everything is installed.
+#    deps:
+#      - task: package-generate
+#    cmds:
+#      - task: package-apply
+#      - chainsaw test
+#  helm-repo:
+#    cmds:
+#      - helm repo add crossplane-stable https://charts.crossplane.io/stable
+#      - helm repo update
+#    internal: true
+  run-kcl:
+    cmds:
+      - mkdir yaml-generator1 & cd yaml-generator1
+      - kusion init
