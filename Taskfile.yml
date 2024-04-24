@@ -30,9 +30,16 @@ tasks:
     deps:
       - task: cluster:create
     cmds:
-      - helm install prometheus-release prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+      - flux bootstrap github \
+        --token-auth \
+        --owner=yurikrupnik \
+        --repository=my-repository-name \
+        --branch=main \
+        --path=clusters/my-cluster \
+        --personal
+#      - helm install prometheus-release prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
 #      - helm install --create-namespace -n vela-system kubevela kubevela/vela-core --wait
-      - helm install external-secrets external-secrets/external-secrets -n external-secrets --create-namespace
+#      - helm install external-secrets external-secrets/external-secrets -n external-secrets --create-namespace
 #      - defer: cluster:delete
   # Test
   test:
