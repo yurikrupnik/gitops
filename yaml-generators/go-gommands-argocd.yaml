@@ -22,32 +22,31 @@ spec:
       selfHeal: true
       prune: true
 ---
-apiVersion: generators.external-secrets.io/v1alpha1
-kind: GCRAccessToken
-metadata:
-  name: gcr-gen
-spec:
-  # project where gcr lives in
-  projectID: "devops-386509"
 
-  # choose authentication strategy
-  auth:
-#    # option 1: workload identity
+#apiVersion: generators.external-secrets.io/v1alpha1
+#kind: GCRAccessToken
+#metadata:
+#  name: gcr-gen
+#spec:
+#  projectID: "devops-386509"
+#  # choose authentication strategy
+#  auth:
+#    # option 2: GCP service account
+##    secretRef:
+##      secretAccessKeySecretRef:
+##        name: secret-puller              # secret name containing SA key
+##        key: creds
+##    # option 1: workload identity
 #    workloadIdentity:
 #      # point to the workload identity
 #      # service account
 #      serviceAccountRef:
 #        name: ""
-#        audiences: []
+##        audiences: []
 #      # the cluster can live in a different project or location
 #      # use the following fields to configure where the cluster lives
 #      clusterLocation: ""
 #      clusterName: ""
-#      clusterProjectID: ""
+#      clusterProjectID: "devops-386509"
 
 
-    # option 2: GCP service account
-    secretRef:
-      secretAccessKeySecretRef:
-        name: secret-puller              # secret name containing SA key
-        key: creds
