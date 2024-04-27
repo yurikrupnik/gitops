@@ -1,0 +1,10 @@
+#---https://kusionstack.github.io/charts
+apiVersion: krm.kcl.dev/v1alpha1
+kind: KCLRun
+metadata:
+  name: set-annotation
+spec:
+  params:
+    annotations:
+      managed-by: kubectl-kcl
+  source: oci://ghcr.io/kcl-lang/set-annotation

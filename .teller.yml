@@ -1,0 +1,82 @@
+
+project: gitops
+confirm: Are you sure you want to run on {{stage}}?
+
+
+# Set this if you want to carry over parent process' environment variables
+# carry_env: true 
+
+
+#
+# Variables
+#
+# Feel free to add options here to be used as a variable throughout
+# paths.
+#
+#opts:
+#  region: env:AWS_REGION    # you can get env variables with the 'env:' prefix, for default values if env not found use comma. Example: env:AWS_REGION,{DEFAULT_VALUE}
+#  stage: development
+
+
+#
+# Providers
+#
+providers:
+  # configure only from environment
+  # filter secret versioning by adding comma separating in path value (path: prod/foo/bar,<VERSION>).
+#  aws_secretsmanager:
+#    env_sync:
+#      path: prod/foo/bar
+#    env:
+#      FOO_BAR:
+#        path: prod/foo/bar
+#        field: SOME_KEY
+
+  # configure only from environment
+#  aws_ssm:
+#    env:
+#      FOO_BAR:
+#        path: /prod/foobar
+#        decrypt: true
+#  github_token
+#  github_user
+  # GOOGLE_APPLICATION_CREDENTIALS=foobar.json
+  # https://cloud.google.com/secret-manager/docs/reference/libraries#setting_up_authentication
+  google_secretmanager:
+    env_sync:
+      path: projects/431680832853
+#    env:
+#      PERSONAL_ACCOUNT:
+##        # need to supply the relevant version (versions/1)
+#        path: projects/431680832853/secrets/personal-account/versions/latest
+#      MONGO_URI:
+#        path: projects/431680832853/secrets/mongo-uri/versions/latest
+#      REDIS_CONFIG:
+#        path: projects/431680832853/secrets/redis-config/versions/latest
+#        path: projects/431680832853/secrets/personal-account
+
+#      MONGO_URI:
+#        # need to supply the relevant version (versions/1)
+#        path: projects/431680832853/secrets/mongo-uri
+
+  # you can mix and match many files
+#  azure_keyvault:
+#    env_sync:
+#      path: azure
+#    env:
+#      FOO_BAR:
+#        path: foobar
+
+  # Configure via environment variables:
+  # OP_CONNECT_HOST
+  # OP_CONNECT_TOKEN
+#  1password:
+#    env_sync:
+#        path: # Key title
+#        source: # 1Password token gen include access to multiple vault. to get the secrets you must add and vaultUUID. the field is mandatory
+#    env:
+#      FOO_BAR:
+#        path: # Key title
+#        source: # 1Password token gen include access to multiple vault. to get the secrets you must add and vaultUUID. the field is mandatory
+#        field: # The secret field to get. notesPlain, {label key}, password etc.
+

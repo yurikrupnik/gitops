@@ -24,19 +24,26 @@ tasks:
   stop:
     cmds:
       - task: cluster:delete
+  linkerd:install:
+    cmds:
+      - linkerd version
+      - linkerd check --pre
+      - linkerd install --crds | kubectl apply -f -
+      - linkerd install | kubectl apply -f -
   start:
     aliases:
       - shit
     deps:
       - task: cluster:create
     cmds:
-      - flux bootstrap github \
-        --token-auth \
-        --owner=yurikrupnik \
-        --repository=my-repository-name \
-        --branch=main \
-        --path=clusters/my-cluster \
-        --personal
+#      - gcp project devops-386509
+      - teller scan
+      - teller env
+#      - task: linkerd:install
+#      - gcloud container clusters get-credentials custom-manager-cluster --region europe-west6 --project devops-386509
+#      - export GITHUB_TOKEN
+      - flux bootstrap github --token-auth --owner=yurikrupnik --repository=gitops-v2 --branch=main --path=clusters/first-cluster --personal --components-extra image-reflector-controller,image-automation-controller
+
 #      - helm install prometheus-release prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
 #      - helm install --create-namespace -n vela-system kubevela kubevela/vela-core --wait
 #      - helm install external-secrets external-secrets/external-secrets -n external-secrets --create-namespace

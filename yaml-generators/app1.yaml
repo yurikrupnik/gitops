@@ -1,0 +1,316 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: kcl-deployment
+  namespace: default
+spec:
+  interval: 10s # Check every 10 seconds
+  url: https://github.com/kcl-lang/flask-demo-kcl-manifests.git
+  ref:
+    branch: main # Monitor the main branch
+---
+#apiVersion: krm.kcl.dev.fluxcd/v1alpha1
+#kind: KCLRun
+#metadata:
+#  name: kcl-git-controller
+#  namespace: default
+#spec:
+#  sourceRef:
+#    kind: GitRepository
+#    name: kcl-deployment
+#---
+
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: my-password
+spec:
+  length: 42
+  digits: 5
+  symbols: 5
+  symbolCharacters: "-_$@"
+  noUpper: false
+  allowRepeat: true
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: "password"
+spec:
+  refreshInterval: "30m"
+  target:
+    name: password-secret
+  dataFrom:
+    - sourceRef:
+        generatorRef:
+          apiVersion: generators.external-secrets.io/v1alpha1
+          kind: Password
+          name: "my-password"
+#---
+#apiVersion: v1
+#kind: ServiceAccount
+#metadata:
+#  name: external-secrets
+#  namespace: external-secrets
+#  annotations:
+#    iam.gke.io/gcp-service-account: secret-puller@devops-386509.iam.gserviceaccount.com
+#---
+#apiVersion: external-secrets.io/v1beta1
+#kind: ClusterSecretStore
+#metadata:
+#  name: gcp-store
+#spec:
+#  provider:
+#    gcpsm:
+#      projectID: devops-386509
+#      auth:
+#        workloadIdentity:
+#          # name of the cluster region
+#          clusterLocation: europe-west6
+#          # name of the GKE cluster
+#          clusterName: custom-manager-cluster
+#          # projectID of the cluster (if omitted defaults to spec.provider.gcpsm.projectID)
+#          #          clusterProjectID: my-cluster-project
+#          # reference the sa from above
+#          serviceAccountRef:
+#            name: external-secrets
+#            namespace: external-secrets
+---
+apiVersion: external-secrets.io/v1beta1
+#kind: SecretStore
+kind: ClusterSecretStore
+metadata:
+  name: cluster-secrets
+#  namespace: aris
+spec:
+  provider:
+    gcpsm:                                  # gcpsm provider
+      auth:
+        secretRef:
+          secretAccessKeySecretRef:
+            name: secret-puller              # secret name containing SA key
+            key: creds  # key name containing SA key
+      projectID: devops-386509
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterExternalSecret
+metadata:
+  name: hello-world
+#  namespace: crossplane-system
+spec:
+  # The name to be used on the ExternalSecrets
+  externalSecretName: "hello-world-es"
+
+  # This is a basic label selector to select the namespaces to deploy ExternalSecrets to.
+  # you can read more about them here https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#resources-that-support-set-based-requirements
+#  namespaceSelector:
+#    matchLabels:
+#      cool: label
+
+  # How often the ClusterExternalSecret should reconcile itself
+  # This will decide how often to check and make sure that the ExternalSecrets exist in the matching namespaces
+  refreshTime: "1m"
+
+  # This is the spec of the ExternalSecrets to be created
+  # The content of this was taken from our ExternalSecret example
+  externalSecretSpec:
+    secretStoreRef:
+      name: cluster-secrets
+      kind: ClusterSecretStore
+
+    refreshInterval: "1h"
+#    target:
+#      name: my-secret
+#      creationPolicy: 'Merge'
+#      template:
+#        type: kubernetes.io/dockerconfigjson
+#
+#        metadata:
+#          annotations: { }
+#          labels: { }
+#        data:
+#          config.yml: |
+#            endpoints:
+#            - https://{{ .data.user }}:{{ .data.password }}@api.exmaple.com
+#        templateFrom:
+#          - configMap:
+#              name: alertmanager
+#              items:
+#                - key: alertmanager.yaml
+    data:
+      - secretKey: secret-key-to-be-managed
+        remoteRef:
+#          key: iac-manager-key
+          key: mongo-uri
+#          version: provider-key-version
+#          property: provider-key-property
+#    dataFrom:
+#      - key: iac-manager-key
+#        version: latest
+#        property: provider-key-property
+#  refreshInterval: 1h           # rate SecretManager pulls GCPSM
+#  secretStoreRef:
+#    kind: ClusterSecretStore
+#    name: cluster-secrets               # name of the SecretStore (or kind specified)
+#  target:
+#    name: lol  # name of the k8s Secret to be created
+#    creationPolicy: Owner
+#  data:
+#    - secretKey: mong-uri-test # name of the GCPSM secret key
+#      remoteRef:
+#        version: "latest"
+#        key: mongo-uri
+#    - secretKey: redis-config # name of the GCPSM secret key
+#      remoteRef:
+#        version: "latest"
+#        key: redis-config
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: workload-identity-test
+  namespace: external-secrets
+spec:
+  containers:
+    - image: google/cloud-sdk:slim
+      name: workload-identity-test
+      command: ["sleep","infinity"]
+  serviceAccountName: external-secrets
+  nodeSelector:
+    iam.gke.io/gke-metadata-server-enabled: "true"
+---
+#apiVersion: notification.toolkit.fluxcd.io/v1
+#kind: Receiver
+#metadata:
+#  name: github-receiver
+#  namespace: flux-system
+#spec:
+#  type: github
+#  events:
+#    - "ping"
+#    - "push"
+#  secretRef:
+#    name: receiver-token
+#  resources:
+#    - apiVersion: source.toolkit.fluxcd.io/v1
+#      kind: GitRepository
+#      name: flux-system
+#---
+#apiVersion: notification.toolkit.fluxcd.io/v1beta3
+#kind: Provider
+#metadata:
+#  name: googlepubsub-provider
+#  namespace: desired-namespace
+#spec:
+#  type: googlepubsub
+#  address: devops-386509
+#  channel: cluster-events
+#  secretRef:
+#    name: googlepubsub-provider-creds
+#---
+#apiVersion: notification.toolkit.fluxcd.io/v1beta3
+#kind: Provider
+#metadata:
+#  name: slack-bot
+#  namespace: flux-system
+#spec:
+#  type: slack
+#  channel: general
+#  address: https://slack.com/api/chat.postMessage
+#  secretRef:
+#    name: slack-bot-token
+#---
+#apiVersion: notification.toolkit.fluxcd.io/v1beta3
+#kind: Alert
+#metadata:
+#  name: slack
+#  namespace: flux-system
+#spec:
+#  summary: "Cluster addons impacted in us-east-2"
+#  providerRef:
+#    name: slack-bot
+#  eventSeverity: error
+#  eventSources:
+#    - kind: GitRepository
+#      name: '*'
+#    - kind: Kustomization
+#      name: '*'
+#---
+#apiVersion: image.toolkit.fluxcd.io/v1beta2
+#kind: ImageRepository
+#metadata:
+#  name: first-rust-app
+#  namespace: default
+#spec:
+#  image: yurikrupnik/go-commands
+#  interval: 1h
+#  provider: generic
+#---
+#apiVersion: image.toolkit.fluxcd.io/v1beta2
+#kind: ImagePolicy
+#metadata:
+#  name: first-first-app
+#  namespace: default
+#spec:
+#  imageRepositoryRef:
+#    name: first-rust-app
+#  policy:
+#    semver:
+#      range: 0.0.x
+#---
+#apiVersion: image.toolkit.fluxcd.io/v1beta2
+#kind: ImageRepository
+#metadata:
+#  name: podinfo
+#  namespace: default
+#spec:
+#  image: stefanprodan/podinfo
+#  interval: 1h
+#  provider: generic
+#---
+#apiVersion: image.toolkit.fluxcd.io/v1beta2
+#kind: ImagePolicy
+#metadata:
+#  name: podinfo
+#  namespace: default
+#spec:
+#  imageRepositoryRef:
+#    name: podinfo
+#  policy:
+#    semver:
+#      range: 5.1.x
+#---
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: nginx-deployment
+#  labels:
+#    app: nginx
+#spec:
+#  replicas: 3
+#  selector:
+#    matchLabels:
+#      app: nginx
+#  template:
+#    metadata:
+#      labels:
+#        app: nginx
+#    spec:
+#      containers:
+#        - name: nginx
+#          image: nginx:1.14.2
+#          ports:
+#            - containerPort: 80
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: test
+#spec:
+#  selector:
+#    app: MyApp
+#  ports:
+#    - protocol: TCP
+#      port: 80
+#      targetPort: 9376
