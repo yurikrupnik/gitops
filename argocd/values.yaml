@@ -750,7 +750,7 @@ redis:
       pullSecrets: []
       registry: docker.io
       repository: bitnami/bitnami-shell
-      tag: 11-debian-11-r16
+      tag: 11-debian-11-r136
     mountHostSys: false
     resources:
       limits: {}
@@ -779,7 +779,7 @@ redis:
       pullSecrets: []
       registry: docker.io
       repository: bitnami/bitnami-shell
-      tag: 11-debian-11-r16
+      tag: 11-debian-11-r136
     resources:
       limits: {}
       requests: {}
@@ -1076,7 +1076,7 @@ volumePermissions:
     pullSecrets: []
     registry: docker.io
     repository: bitnami/bitnami-shell
-    tag: 11-debian-11-r16
+    tag: 11-debian-11-r136
   resources:
     limits: {}
     requests: {}
