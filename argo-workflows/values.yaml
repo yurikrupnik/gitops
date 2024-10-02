@@ -632,7 +632,7 @@ mysql:
       pullSecrets: []
       registry: docker.io
       repository: bitnami/bitnami-shell
-      tag: 11-debian-11-r3
+      tag: 11-debian-11-r136
     resources: {}
 nameOverride: ""
 postgresql:
@@ -1072,7 +1072,7 @@ postgresql:
       pullSecrets: []
       registry: docker.io
       repository: bitnami/bitnami-shell
-      tag: 11-debian-11-r8
+      tag: 11-debian-11-r136
     resources:
       limits: {}
       requests: {}
