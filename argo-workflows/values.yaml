@@ -718,7 +718,7 @@ postgresql:
     pullSecrets: []
     registry: docker.io
     repository: bitnami/postgresql
-    tag: 14.4.0-debian-11-r3
+    tag: 14.18.0-debian-12-r0
   kubeVersion: ""
   ldap:
     basedn: ""
