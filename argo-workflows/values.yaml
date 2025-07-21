@@ -1126,7 +1126,7 @@ server:
     pullSecrets: []
     registry: docker.io
     repository: bitnami/argo-workflow-cli
-    tag: 3.3.8-scratch-r1
+    tag: 3.4.9-scratch-r1
   initContainers: []
   lifecycleHooks: {}
   livenessProbe:
