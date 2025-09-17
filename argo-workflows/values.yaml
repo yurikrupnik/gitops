@@ -319,7 +319,7 @@ mysql:
       pullSecrets: []
       registry: docker.io
       repository: bitnami/mysqld-exporter
-      tag: 0.14.0-debian-11-r3
+      tag: 0.17.2-debian-12-r16
     livenessProbe:
       enabled: true
       failureThreshold: 3
