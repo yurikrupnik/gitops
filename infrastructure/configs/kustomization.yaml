@@ -1,0 +1,5 @@
+# Platform configuration reconciled after controllers ("infra-configs").
+# CRs that need layer-1 CRDs: ClusterSecretStore, Gateway, alerts, policies.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: []

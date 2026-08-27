@@ -1,0 +1,18 @@
+# Layer 3: stable apps. Apps under active development stay in Tilt,
+# not here — Flux would revert local overrides.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infra-configs
+  interval: 10m
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  path: ./apps/local
+  prune: true
