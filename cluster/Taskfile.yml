@@ -1,26 +1,29 @@
 # https://taskfile.dev
+# cluster/Taskfile.yml — consumable remotely:
+#   task --taskfile https://raw.githubusercontent.com/yurikrupnik/gitops/refs/heads/main/cluster/Taskfile.yml create
 
 version: '3'
 
 vars:
-  GREETING: Hello, World!
-  CLUSTER_TYPE: kind
+  CLUSTER_NAME: kind
+  # Only the Taskfile itself is downloaded by `--taskfile <url>`; sibling files are not.
+  # So the kind config is fetched at run time and piped into kind.
+  CONFIG_URL: https://raw.githubusercontent.com/yurikrupnik/gitops/refs/heads/main/cluster/cluster.yaml
+
 tasks:
-  delete:
-    desc: Delete kind 4 cores local cluster.
-    summary: Delete Kind Cluster
-    aliases:
-      - delete
-    cmds:
-      - kind delete cluster
   create:
-    desc: Create kind 4 cores local cluster.
+    desc: Create the kind cluster (1 control-plane + 3 workers).
     summary: Create Kind Cluster
-    aliases:
-      - create
-    dir: cluster
     preconditions:
-      - echo default CLUSTER_TYPE: {{.CLUSTER_TYPE}}
-    label: as
+      - sh: command -v kind
+        msg: kind is not installed
+      - sh: command -v curl
+        msg: curl is not installed
     cmds:
-      - kind create cluster --config cluster.yaml
+      - curl -fsSL {{.CONFIG_URL}} | kind create cluster --name {{.CLUSTER_NAME}} --config=-
+
+  delete:
+    desc: Delete the kind cluster.
+    summary: Delete Kind Cluster
+    cmds:
+      - kind delete cluster --name {{.CLUSTER_NAME}}
